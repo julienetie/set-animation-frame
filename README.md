@@ -4,12 +4,25 @@ Delay a function call without the use of setTimeout()
 ```javascript 
 // Heads up!
 // Animation timing functions work in enviroments that either render or 
-// simulate the rendering of frames. (Unlike nodejs & dev tools)
+// simulate the rendering of frames. (will typically not work in nodejs or the dev tools console)
+```
+#### ES6
+```javascript
+import { setAnimationFrame, clearAnimationFrame } from 'set-animation-frame'
+
+// Set a delay for 3000ms.
+const clearId = setAnimationFrame((timeStamp) => console.log(`Finished at ${timeStamp}`,3000)
+
+// Interrupt the delay at any moment.
+clearAnimationFrame(clearId)
+```
+#### ES5
+```javascript
+const setAnimationFrame = SAF.setAnimationFrame
+const clearAnimationFrame = SAF.clearAnimationFrame
 ```
 
-``` var requestID = setAnimationFrame(function, delay);```
-
-- setAnimationFrame returns the requestID for cancellation via cancelRequestAnimationFrame() ([polyfill](https://github.com/julienetie/request-frame)).
+- setAnimationFrame May require a requestAnimationFrame & cancelAnimationFrame polyfill ([polyfill](https://github.com/julienetie/request-frame)).
 - setAnimationFrame passes the given function the [DOMHighResTimeStamp](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp) as a parameter.
 - The delay units are in miliseconds.
 
