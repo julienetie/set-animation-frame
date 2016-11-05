@@ -1,6 +1,6 @@
 {
   "name": "set-animation-frame",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Delay a function call without the use of setTimeout()",
   "main": "set-animation-frame.js",
   "jsnext:main": "set-animation-frame.es.js",
