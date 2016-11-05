@@ -6,14 +6,47 @@
  *‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
  */
 
+
+/**
+ * clearAnimationFrame allows you to
+ * interrupt setAnimationFrame and cancel
+ * further loops. Similar to clearTimeout.
+ * @param {Number} clearId
+ */
+export const clearAnimationFrame = (id) => {
+  if(setAnimationFrame[id] === true){
+    delete setAnimationFrame[id];
+  }
+}
+
+
 /**
  * @param {Function} callback
  * @param {Number} delay
  */
-const setAnimationFrame = (callback, delay) => {
-    var duration = 0;
-    var terminate = false;
-    var requestId;
+export const setAnimationFrame = (callback, delay) => {
+    let duration = 0;
+    let terminate = false;
+    let requestId;
+    const canceId = Date.now();
+
+
+    /**
+     * Polyfill requestAnimationFrame & cancelAnimationFrame using
+     * request-frame if available.
+     */
+    const hasRequestFrame = typeof requestFrame === 'function';
+    const request = hasRequestFrame ? requestFrame('request') : requestAnimationFrame;
+    const cancel = hasRequestFrame ? requestFrame('cancel') : cancelAnimationFrame;
+
+
+    /**
+     * The cancelId is a unique identifier for the execution.
+     * It is used because it is not possible to calculate
+     * the request Id time as this will always be an approximate 
+     * value.
+     */
+    setAnimationFrame[canceId] = true;
 
 
     /**
@@ -22,7 +55,7 @@ const setAnimationFrame = (callback, delay) => {
      * is returned. Whilst unsatisfied requestAnimationFrame
      * calls the loop with the incremented timestamp
      */
-    function loop(timestamp) {
+    const loop = (timestamp) => {
         if (!duration) {
             duration = timestamp;
         }
@@ -31,7 +64,11 @@ const setAnimationFrame = (callback, delay) => {
             if (callback) callback(timestamp);
             terminate = true;
         } else {
-            requestId = requestAnimationFrame(loop);
+            requestId = request(loop);
+            
+            if(!setAnimationFrame[canceId]){
+                cancel(requestId);
+            }
         }
     }
 
@@ -43,11 +80,8 @@ const setAnimationFrame = (callback, delay) => {
 
 
     /**
-     * Returns the timestamp relative to the navigationStart attribute of the 
-     * PerformanceTiming interface
-     * @return {Number} - DOMHighResTimeStamp
+     * Returns the unique property name of the execution.
+     * @return {Number} - milliseconds.
      */
-    return requestId;
+    return canceId;
 }
-
-export default setAnimationFrame;

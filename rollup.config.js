@@ -2,16 +2,14 @@ import babel from 'rollup-plugin-babel';
 import nodeResolve from 'rollup-plugin-node-resolve';
 
 export default {
-	moduleName: 'setAnimationFrame',
+	moduleName: 'SAF',
 	entry: 'set-animation-frame.es.js',
-	format: 'umd',
 	plugins: [babel({
-			exclude: 'node_modules/**'
+			exclude: './node_modules/**',
+            presets: 'es2015-rollup'
 		}),
-		nodeResolve({ jsnext: true })
+		nodeResolve({ jsnext: false })
 	],
-	targets: [{
-		format: 'umd',
-		dest: 'set-animation-frame.js'
-	}]
+	format: 'umd',
+	dest: 'set-animation-frame.js'
 };
